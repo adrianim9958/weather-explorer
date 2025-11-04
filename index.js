@@ -1,4 +1,4 @@
-const YR_URL = "https://www.yr.no/nb/værvarsel/daglig-tabell";
+const YR_URL = "https://www.yr.no/en/forecast/daily-table";
 
 // --- 지도 초기화 ---
 const map = L.map("map", {zoomControl: true});
