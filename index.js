@@ -192,12 +192,12 @@ function renderRows(rows, tbodyId) {
     if (!tbody) return;
     tbody.innerHTML = rows
         .map((r) => {
-            const h = r["높이"]
-                ? String(r["높이"]).replace(/\B(?=(\d{3})+(?!\d))/g, ",") + " m"
+            const h = r["height"]
+                ? String(r["height"]).replace(/\B(?=(\d{3})+(?!\d))/g, ",") + " m"
                 : "";
             return `<tr>
-                <td>${r["이름"] || ""}</td>
-                <td>${r["주소"] || ""}</td>
+                <td>${r["name"] || ""}</td>
+                <td>${r["address"] || ""}</td>
                 <td style="text-align:right">${h}</td>
               </tr>`;
         })
