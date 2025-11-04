@@ -400,7 +400,8 @@ button:disabled {
         padding: 14px 16px;
     }
 
-    .controls button {
+    .controls button#go,
+    .controls button#demo {
         width: 100%;
         font-size: 16px;
         padding: 14px 0;
