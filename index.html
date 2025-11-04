@@ -1,140 +1,143 @@
 <!DOCTYPE html>
 
 <html lang="ko">
-  <head>
-    <meta charset="utf-8" />
-    <meta content="width=device-width, initial-scale=1" name="viewport" />
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1" name="viewport"/>
     <title>날씨 검색 프로그램</title>
     <link
-      crossorigin=""
-      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-      integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
-      rel="stylesheet"
+            crossorigin=""
+            href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+            integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+            rel="stylesheet"
     />
-    <link rel="stylesheet" href="./index.css" />
-  </head>
-  <body>
-    <div class="wrap">
-      <div class="layout">
+    <link rel="stylesheet" href="./index.css"/>
+</head>
+<body>
+<div class="wrap">
+    <div class="layout">
         <div class="main">
-          <header>
-            <h2>날씨 검색 프로그램</h2>
-            <div class="hint">
-              OpenStreetMap Nominatim을 이용한 간단 지오코더
-            </div>
-          </header>
-          <section
-            aria-label="주소 입력 및 좌표 결과"
-            class="card"
-            role="region"
-          >
-            <div class="controls">
-              <input
-                autocomplete="street-address"
-                id="q"
-                placeholder="예: 제주특별자치도 제주시 첨단로 242"
-                type="text"
-                name="address"
-              />
-              <button id="go">좌표 조회</button>
-              <button id="demo" title="예시 주소 넣기">예시</button>
-            </div>
-            <div class="result" hidden="" id="result">
-              <div class="kv">
-                <label>위도 (lat)</label>
-                <div class="row">
-                  <div class="val" id="lat">—</div>
-                  <button class="copy" data-copy-target="#lat">복사</button>
+            <header>
+                <h2>날씨 검색 프로그램</h2>
+                <div class="hint">
+                    OpenStreetMap Nominatim을 이용한 간단 지오코더
                 </div>
-              </div>
-              <div class="kv">
-                <label>경도 (lon)</label>
-                <div class="row">
-                  <div class="val" id="lon">—</div>
-                  <button class="copy" data-copy-target="#lon">복사</button>
+            </header>
+            <section
+                    aria-label="주소 입력 및 좌표 결과"
+                    class="card"
+                    role="region"
+            >
+                <div class="controls">
+                    <div class="input-wrap">
+                        <input
+                                autocomplete="street-address"
+                                id="q"
+                                placeholder="예: 제주특별자치도 제주시 첨단로 242"
+                                type="text"
+                                name="address"
+                        />
+                        <button id="clear" title="입력 내용 지우기" hidden>✕</button>
+                    </div>
+                    <button id="go">좌표 조회</button>
+                    <button id="demo" title="예시 주소 넣기">예시</button>
                 </div>
-              </div>
-              <div class="kv" style="grid-column: 1/-1">
-                <label>정식 주소 (표시명)</label>
-                <div class="row">
-                  <div class="val" id="disp">—</div>
-                  <button class="copy" data-copy-target="#disp">복사</button>
+                <div class="result" hidden="" id="result">
+                    <div class="kv">
+                        <label>위도 (lat)</label>
+                        <div class="row">
+                            <div class="val" id="lat">—</div>
+                            <button class="copy" data-copy-target="#lat">복사</button>
+                        </div>
+                    </div>
+                    <div class="kv">
+                        <label>경도 (lon)</label>
+                        <div class="row">
+                            <div class="val" id="lon">—</div>
+                            <button class="copy" data-copy-target="#lon">복사</button>
+                        </div>
+                    </div>
+                    <div class="kv" style="grid-column: 1/-1">
+                        <label>정식 주소 (표시명)</label>
+                        <div class="row">
+                            <div class="val" id="disp">—</div>
+                            <button class="copy" data-copy-target="#disp">복사</button>
+                        </div>
+                    </div>
                 </div>
-              </div>
-            </div>
-            <div class="badnews" hidden="" id="error"></div>
-            <div aria-label="지도" id="map" role="img"></div>
-            <div class="footer">
+                <div class="badnews" hidden="" id="error"></div>
+                <div aria-label="지도" id="map" role="img"></div>
+                <div class="footer">
               <span
-                >Tip: 엔터키로도 검색돼요. 좌표를 클릭-복사해 다른 앱에
+              >Tip: 엔터키로도 검색돼요. 좌표를 클릭-복사해 다른 앱에
                 붙여넣기!</span
               >
-              <span
-                >데이터 출처: OpenStreetMap © 기여자 • Nominatim API(가벼운
+                    <span
+                    >데이터 출처: OpenStreetMap © 기여자 • Nominatim API(가벼운
                 개인용도 권장)</span
-              >
-            </div>
-          </section>
+                    >
+                </div>
+            </section>
         </div>
 
         <aside aria-label="산 목록 사이드바" class="side">
-          <section
-            aria-labelledby="blackyark-title"
-            class="table-card"
-            role="region"
-          >
-            <header>
-              <h3 id="blackyark-title">블랙야크</h3>
-              <span class="badge">이름 / 주소 / 높이</span>
-            </header>
-            <div class="table-wrap">
-              <table class="table">
-                <thead>
-                  <tr>
-                    <th>이름</th>
-                    <th>주소</th>
-                    <th>높이</th>
-                  </tr>
-                </thead>
-                <tbody id="blackyark-tbody"></tbody>
-              </table>
-            </div>
-          </section>
-          <section
-            aria-labelledby="hundredmount-title"
-            class="table-card"
-            role="region"
-          >
-            <header>
-              <h3 id="hundredmount-title">산림청</h3>
-              <span class="badge">이름 / 주소 / 높이</span>
-            </header>
-            <div class="table-wrap">
-              <table class="table">
-                <thead>
-                  <tr>
-                    <th>이름</th>
-                    <th>주소</th>
-                    <th>높이</th>
-                  </tr>
-                </thead>
-                <tbody id="national-tbody"></tbody>
-              </table>
-            </div>
-          </section>
+            <section
+                    aria-labelledby="blackyark-title"
+                    class="table-card"
+                    role="region"
+            >
+                <header>
+                    <h3 id="blackyark-title">블랙야크</h3>
+                    <span class="badge">이름 / 주소 / 높이</span>
+                </header>
+                <div class="table-wrap">
+                    <table class="table">
+                        <thead>
+                        <tr>
+                            <th>이름</th>
+                            <th>주소</th>
+                            <th>높이</th>
+                        </tr>
+                        </thead>
+                        <tbody id="blackyark-tbody"></tbody>
+                    </table>
+                </div>
+            </section>
+            <section
+                    aria-labelledby="hundredmount-title"
+                    class="table-card"
+                    role="region"
+            >
+                <header>
+                    <h3 id="hundredmount-title">산림청</h3>
+                    <span class="badge">이름 / 주소 / 높이</span>
+                </header>
+                <div class="table-wrap">
+                    <table class="table">
+                        <thead>
+                        <tr>
+                            <th>이름</th>
+                            <th>주소</th>
+                            <th>높이</th>
+                        </tr>
+                        </thead>
+                        <tbody id="national-tbody"></tbody>
+                    </table>
+                </div>
+            </section>
         </aside>
-      </div>
     </div>
-    <script
-      crossorigin=""
-      integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
-      src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-    ></script>
-    <!-- 먼저 데이터 두 개 -->
-    <script src="./data/blackyark.js" defer></script>
-    <script src="./data/national.js" defer></script>
+</div>
+<script
+        crossorigin=""
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+        src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+></script>
+<!-- 먼저 데이터 두 개 -->
+<script src="./data/blackyark.js" defer></script>
+<script src="./data/national.js" defer></script>
 
-    <!-- 마지막에 메인 스크립트 (모듈 아님) -->
-    <script src="./index.js" defer></script>
-  </body>
+<!-- 마지막에 메인 스크립트 (모듈 아님) -->
+<script src="./index.js" defer></script>
+</body>
 </html>
