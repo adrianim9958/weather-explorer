@@ -204,7 +204,7 @@ function renderRows(rows, tbodyId) {
         .join("");
 }
 
-renderRows(BLACKYARK_DATA, "blackyark-tbody");
+renderRows(BLACKYAK_DATA, "blackyak-tbody");
 renderRows(NATIONAL_DATA, "national-tbody");
 
 // --- 공통: 모든 테이블에서 선택 상태 초기화 ---
@@ -286,7 +286,7 @@ function bindTableClick(tbodyId) {
 }
 
 // 두 테이블에 바인딩
-bindTableClick("blackyark-tbody");
+bindTableClick("blackyak-tbody");
 bindTableClick("national-tbody");
 
 // --- 테이블 접고 펴기 토글 ---
