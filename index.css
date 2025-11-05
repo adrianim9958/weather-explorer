@@ -61,25 +61,28 @@ h1 {
 
 .controls {
     display: flex;
-    flex-wrap: wrap;
+    flex-direction: column;
     gap: 8px;
     padding: 12px;
     border-bottom: 1px solid #1f2937;
 }
 
 .controls .input-wrap {
+    display: flex;
+    flex: 1;
+    align-items: center;
+    gap: 4px;
     position: relative;
-    flex: 1 1 100%;
 }
 
 .controls input[type="text"] {
-    width: 100%;
+    flex: 1;
     min-width: 0;
     background: #0b1220;
     color: var(--text);
     border: 1px solid #263244;
     border-radius: 10px;
-    padding: 14px 36px 14px 16px;
+    padding: 14px 36px 14px 36px;
     font-size: 16px;
 }
 
@@ -87,9 +90,14 @@ h1 {
     color: #60708a;
 }
 
+.button-wrap {
+    display: flex;
+    flex-direction: row;
+}
+
+#plus,
 #clear {
     position: absolute;
-    right: 10px;
     top: 50%;
     transform: translateY(-50%);
     background: none;
@@ -101,6 +109,14 @@ h1 {
     padding: 4px;
     border-radius: 50%;
     transition: background 0.2s ease, color 0.2s ease;
+}
+
+#plus {
+    left: 10px;
+}
+
+#clear {
+    right: 10px;
 }
 
 #clear:hover {
@@ -139,6 +155,44 @@ button {
 button:disabled {
     opacity: 0.6;
     cursor: not-allowed;
+}
+
+.kakao-button-wrapper {
+    display: flex;
+    justify-content: center;
+    margin-top: 8px;
+    gap: 2px;
+}
+
+.kakao-share-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 8px 14px 8px 38px; /* 왼쪽에 아이콘 공간 확보 */
+    background-color: #fee500; /* 카카오 노랑 */
+    color: #3c1e1e; /* 카카오 브라운 */
+    border: none;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    background-image: url("image/kakao.png");
+    background-repeat: no-repeat;
+    background-size: 20px 20px;
+    background-position: 12px center; /* 아이콘 위치 */
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+}
+
+.kakao-share-btn:hover {
+    background-color: #fada0a;
+    transform: translateY(-1px);
+}
+
+.kakao-share-btn:active {
+    transform: translateY(0);
+    box-shadow: 0 0 0 rgba(0, 0, 0, 0);
 }
 
 .hint {
@@ -387,6 +441,133 @@ button:disabled {
     filter: drop-shadow(0 0 2px rgba(255, 223, 80, 0.2));
 }
 
+
+/* 즐겨찾기: 헤더 우측 버튼 */
+.header-fav-btn {
+    margin-left: auto;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 10px;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    background: #fff;
+    cursor: pointer;
+    font-size: 13px;
+}
+
+.header-fav-btn:hover {
+    background: #f7f7f7;
+}
+
+/* 입력 옆 + 버튼 */
+.input-fav-add {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    border: 1px solid #ddd;
+    background: #fff;
+    cursor: pointer;
+    margin-right: 6px; /* x 버튼 왼쪽 */
+}
+
+.input-fav-add:hover {
+    background: #f7f7f7;
+}
+
+/* 즐겨찾기 드롭다운 */
+.fav-panel {
+    position: absolute;
+    right: 12px;
+    top: calc(100% + 8px);
+    width: 280px;
+    max-height: 360px;
+    overflow: auto;
+    background: #fff;
+    border: 1px solid #e5e5e5;
+    border-radius: 10px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, .12);
+    z-index: 1000;
+    color: black;
+    opacity: 0.95;
+}
+
+.fav-header-wrapper {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 12px;
+    font-weight: 700;
+    border-bottom: 1px solid #eee;
+}
+
+.fav-header-wrapper button {
+    border: 1px solid #ddd;
+    background: #cb4d4d;
+    color: #fff;
+    border-radius: 6px;
+    padding: 4px 6px;
+    font-size: 11px;
+    cursor: pointer;
+}
+
+.fav-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.fav-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 12px;
+    border-bottom: 1px solid #f4f4f4;
+}
+
+.fav-item:last-child {
+    border-bottom: none;
+}
+
+.fav-name {
+    flex: 1;
+    font-size: 13px;
+    line-height: 1.2;
+}
+
+.fav-meta {
+    font-size: 11px;
+    color: #666;
+}
+
+.fav-actions {
+    display: flex;
+    gap: 6px;
+}
+
+.fav-actions button {
+    border: 1px solid #ddd;
+    background: #fff;
+    border-radius: 6px;
+    padding: 4px 6px;
+    font-size: 11px;
+    cursor: pointer;
+}
+
+.fav-actions button:hover {
+    background: #f7f7f7;
+}
+
+/* 헤더 우측 드롭다운 포지셔닝 컨테이너 */
+.header-fav-wrapper {
+    position: relative;
+    margin-left: auto;
+}
+
 /* --- 모바일 (최대 720px 이하) --- */
 @media (max-width: 720px) {
     .controls {
@@ -397,7 +578,10 @@ button:disabled {
 
     .controls input[type="text"] {
         font-size: 16px;
-        padding: 14px 16px;
+    }
+
+    .controls .button-wrap {
+        flex-direction: column;
     }
 
     .controls button#go,

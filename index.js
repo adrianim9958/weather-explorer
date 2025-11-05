@@ -1,4 +1,90 @@
 const YR_URL = "https://www.yr.no/en/forecast/daily-table";
+const KAKAO_API_KEY = "6e13e74504dec6222a103a0384ba4f61";
+
+(function initKakaoWhenReady() {
+    function doInit() {
+        try {
+            if (!window.Kakao) return false;
+            if (!window.Kakao.isInitialized?.()) {
+                const key =
+                    window.__KAKAO_JS_KEY__ ||
+                    document.querySelector('meta[name="kakao-js-key"]')?.content ||
+                    "";
+                if (!key) {
+                    console.warn("Kakao JS key missing");
+                    return false;
+                }
+                window.Kakao.init(key);
+            }
+            return true;
+        } catch (e) {
+            console.error("Kakao.init failed:", e);
+            return false;
+        }
+    }
+
+    if (doInit()) return;
+
+    const sdk = document.getElementById("kakao-sdk");
+    if (sdk) sdk.addEventListener("load", doInit);
+})();
+
+/**
+ * 좌표/주소/링크를 카카오톡으로 공유
+ * @param {number} lat
+ * @param {number} lon
+ * @param {string} yrUrl
+ * @param {string} displayName
+ */
+window.shareToKakao = function (lat, lon, yrUrl, displayName = "") {
+    try {
+        // SDK 미초기화 시도
+        if (!(window.Kakao && window.Kakao.isInitialized?.())) {
+            console.warn("Kakao SDK not ready, trying init again...");
+            if (!window.Kakao) {
+                alert("Kakao SDK가 로드되지 않았습니다. 잠시 후 다시 시도하세요.");
+                return;
+            }
+
+            const key =
+                window.__KAKAO_JS_KEY__ ||
+                document.querySelector('meta[name="kakao-js-key"]')?.content ||
+                "";
+            if (key) {
+                window.Kakao.init(key);
+            } else {
+                alert("카카오 SDK 키가 설정되지 않았습니다.");
+                return;
+            }
+        }
+
+        window.Kakao.Share.sendDefault({
+            objectType: "feed",
+            content: {
+                title: displayName || "선택한 좌표",
+                description: `lat: ${lat}\nlon: ${lon}`,
+                imageUrl: "https://developers.kakao.com/assets/img/og_image.png",
+                link: {
+                    mobileWebUrl: yrUrl,
+                    webUrl: yrUrl,
+                },
+            },
+            buttons: [
+                {
+                    title: "YR 날씨 열기",
+                    link: {
+                        mobileWebUrl: yrUrl,
+                        webUrl: yrUrl,
+                    },
+                },
+            ],
+        });
+    } catch (err) {
+        console.error("카카오 공유 중 오류:", err);
+        alert("카카오톡 공유 중 문제가 발생했습니다.");
+    }
+};
+
 
 // --- 지도 초기화 ---
 const map = L.map("map", {zoomControl: true});
@@ -23,6 +109,7 @@ const $lon = document.getElementById("lon");
 const $disp = document.getElementById("disp");
 const $err = document.getElementById("error");
 const $clear = document.getElementById("clear");
+const $plus = document.getElementById("plus");
 
 // --- 유틸: 복사 버튼 ---
 function bindCopyButtons() {
@@ -92,6 +179,30 @@ async function geocode(query) {
     }
 }
 
+function makePopup(lat, lon, displayName = "") {
+    const lat3 = Number(lat).toFixed(3);
+    const lon3 = Number(lon).toFixed(3);
+    const yrUrl = `${YR_URL}/${lat3},${lon3}`;
+
+    // displayName을 안전하게 특수문자 이스케이프
+    const dispSafe = String(displayName || "").replace(/"/g, '&quot;');
+
+    return (
+        `
+            <b>좌표</b><br>
+              lat: ${lat},<br> lon: ${lon}<br>
+            <a href="${yrUrl}" target="_blank" rel="noopener">YR 날씨 열기</a>
+            <div class="kakao-button-wrapper">
+                <button class="kakao-share-btn"
+                  onclick="shareToKakao(${lat}, ${lon}, '${yrUrl}', '${dispSafe}')"
+                  title="카카오톡 나에게 공유">
+                  나에게 공유
+                </button>
+            </div>
+        `
+    )
+}
+
 function showResult(lat, lon, displayName) {
     // UI 값 반영
     $lat.textContent = String(lat);
@@ -111,16 +222,8 @@ function showResult(lat, lon, displayName) {
         window.open(url, "_blank", "noopener");
     });
 
-    // 팝업에도 바로가기 링크 제공
-    const lat3 = Number(lat).toFixed(3);
-    const lon3 = Number(lon).toFixed(3);
-    const yrUrl = `${YR_URL}/${lat3},${lon3}`;
-
     marker
-        .bindPopup(
-            `<b>좌표</b><br>lat: ${lat}<br>lon: ${lon}<br>` +
-            `<a href="${yrUrl}" target="_blank" rel="noopener">YR 날씨 열기</a>`
-        )
+        .bindPopup(makePopup(lat, lon))
         .openPopup();
 
     // 지도 이동
@@ -155,8 +258,10 @@ $demo.addEventListener("click", () => {
 $q.addEventListener("input", () => {
     if ($q.value.trim().length > 0) {
         $clear.hidden = false;
+        $plus.hidden = false;
     } else {
         $clear.hidden = true;
+        $plus.hidden = true;
     }
 });
 
@@ -164,26 +269,31 @@ $q.addEventListener("input", () => {
 $clear.addEventListener("click", () => {
     $q.value = "";
     $clear.hidden = true;
+    $plus.hidden = true;
     $q.focus();
 });
+
+$plus.addEventListener("click", () => {
+    const name = $q.value.trim();
+    if (!name) {
+        alert("저장할 주소를 입력해주세요.");
+        return;
+    }
+    if (window.FAVORITE && window.FAVORITE.add) {
+        window.FAVORITE.add({ name, lat: null, lon: null });
+    } else {
+        alert("즐겨찾기 기능이 아직 로드되지 않았습니다.");
+    }
+})
 
 
 // 지도 클릭 시 좌표를 팝업으로 안내
 map.on("click", (e) => {
     const {lat, lng} = e.latlng;
-    const lat3 = lat.toFixed(3);
-    const lon3 = lng.toFixed(3);
-    const yrUrl = `${YR_URL}/${lat3},${lon3}`;
 
     L.popup()
         .setLatLng(e.latlng)
-        .setContent(
-            `
-      <b>좌표</b><br>
-      lat: ${lat.toFixed(6)}, lon: ${lng.toFixed(6)}<br>
-      <a href="${yrUrl}" target="_blank" rel="noopener">YR 날씨 열기</a>
-    `
-        )
+        .setContent(makePopup(lat, lng))
         .openOn(map);
 });
 
@@ -224,6 +334,7 @@ function bindTableClick(tbodyId) {
         if (!tr) return;
 
         $clear.hidden = false;
+        $plus.hidden = false;
 
         // 1) 두 테이블 모두의 기존 선택 해제
         clearAllRowSelections();

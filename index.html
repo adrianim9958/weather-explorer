@@ -11,6 +11,15 @@
             integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
             rel="stylesheet"
     />
+
+    <script id="kakao-sdk" src="https://t1.kakaocdn.net/kakao_js_sdk/2.7.2/kakao.min.js"
+            crossorigin="anonymous"></script>
+
+    <script>
+        window.__KAKAO_JS_KEY__ = "6e13e74504dec6222a103a0384ba4f61";
+    </script>
+    <meta name="kakao-js-key" content="6e13e74504dec6222a103a0384ba4f61">
+
     <link rel="stylesheet" href="./dist/index.css"/>
 </head>
 <body>
@@ -22,6 +31,9 @@
                 <div class="hint">
                     OpenStreetMap Nominatim을 이용한 간단 지오코더
                 </div>
+                <div class="header-fav-wrapper" id="header-fav-wrapper">
+                    <button class="header-fav-btn" id="header-fav-btn">⭐ 즐겨찾기</button>
+                </div>
             </header>
             <section
                     aria-label="주소 입력 및 좌표 결과"
@@ -30,6 +42,7 @@
             >
                 <div class="controls">
                     <div class="input-wrap">
+                        <button id="plus" title="즐겨찾기 추가" hidden>+</button>
                         <input
                                 autocomplete="street-address"
                                 id="q"
@@ -39,8 +52,10 @@
                         />
                         <button id="clear" title="입력 내용 지우기" hidden>✕</button>
                     </div>
-                    <button id="go">좌표 조회</button>
-                    <button id="demo" title="예시 주소 넣기">예시</button>
+                    <div class="button-wrap">
+                        <button id="go">좌표 조회</button>
+                        <button id="demo" title="예시 주소 넣기">예시</button>
+                    </div>
                 </div>
                 <div class="result" hidden="" id="result">
                     <div class="kv">
@@ -138,5 +153,6 @@
 
 <!-- 마지막에 메인 스크립트 (모듈 아님) -->
 <script src="./dist/index.js" defer></script>
+<script src="./dist/favorite.js" defer></script>
 </body>
 </html>

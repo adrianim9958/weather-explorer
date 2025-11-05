@@ -4,13 +4,16 @@
   "description": "날씨 탐색기 (Leaflet + Nominatim)",
   "scripts": {
     "clean": "node -e \"try{require('fs').rmSync('dist',{recursive:true,force:true});}catch{}\"",
-    "build": "npm run clean && mkdir dist && npm run build:data && npm run build:css && npm run build:main",
+    "build": "npm run clean && mkdir dist && npm run build:data && npm run build:favorite && npm run build:css && npm run build:main && npm run copy:images",
     "build:data": "npx terser data/blackyak.js -c -m -o dist/blackyak.js && npx terser data/national.js -c -m -o dist/national.js",
+    "build:favorite": "npx javascript-obfuscator favorite.js --output dist/favorite.js --compact true --control-flow-flattening true --dead-code-injection true --string-array true --string-array-encoding base64 --string-array-threshold 0.75 --disable-console-output true",
     "build:main": "npx javascript-obfuscator index.js --output dist/index.js --compact true --control-flow-flattening true --dead-code-injection true --string-array true --string-array-encoding base64 --string-array-threshold 0.75 --disable-console-output true",
-    "build:css": "npx cleancss -o dist/index.css index.css"
+    "build:css": "npx cleancss -o dist/index.css index.css",
+    "copy:images": "cpx \"image/**/*\" dist/image"
   },
   "devDependencies": {
     "clean-css-cli": "^5.6.3",
+    "cpx": "^1.5.0",
     "javascript-obfuscator": "^4.1.0",
     "rimraf": "^6.0.1",
     "terser": "^5.36.0"
